@@ -1,6 +1,6 @@
 <template>
   <a-form :model="formState">
-    <a-card title="Создать новую задачу" :bordered="false">
+    <a-card title="Создать новую задачу" :bordered="false" :loading="loading">
       <div class="card-content">
         <a-form-item
           name="name"
@@ -15,12 +15,18 @@
           name="caption"
           :rules="[{ required: true, message: 'Напишите описание задачи' }]"
         >
-          <a-input v-model:value="formState.caption" placeholder="Описание задачи" />
+          <a-input
+            v-model:value="formState.caption"
+            placeholder="Описание задачи"
+          />
         </a-form-item>
         <a-form-item>
-        <a-date-picker v-model:value="picked" />
-      </a-form-item>
-        <a-button @click="showInfo" class="btn-ant" :disabled="!isValid"
+          <a-date-picker v-model:value="picked" />
+        </a-form-item>
+        <a-button
+          @click="createTaskHandler"
+          class="btn-ant"
+          :disabled="!isValid"
           >Создать</a-button
         >
       </div>
@@ -33,12 +39,17 @@ import axios from "axios";
 import { ref, computed, reactive } from "vue";
 import type { Dayjs } from "dayjs";
 import { useRouter } from "vue-router";
+import { useTasksStore } from "@/store";
 
 interface FormState {
   name: string;
   caption: string;
 }
+const loading = ref(false)
+const currentDate = ref(new Date().toLocaleDateString())
+console.log(currentDate);
 
+const store = useTasksStore();
 const router = useRouter();
 const picked = ref<Dayjs>();
 const isValid = computed(
@@ -50,19 +61,23 @@ const formState = reactive<FormState>({
   caption: "",
 });
 
-function showInfo() {
+async function createTaskHandler() {
   const taskData = {
     name: formState.name,
     date: picked?.value?.format("DD.MM.YYYY"),
     caption: formState.caption,
     appStatus: "primary",
   };
-  console.log(taskData);
-  axios.post(
+  loading.value = true
+  const response = await axios.post(
     "https://freelance-bourse-vue-ts-default-rtdb.firebaseio.com/Tasks.json",
     taskData
   );
-  router.push("/");
+  loading.value = false
+  if (response.status === 200) {
+    store.fill();
+    router.push("/");
+  }
 }
 </script>
 
@@ -74,7 +89,6 @@ function showInfo() {
 }
 
 .card-content {
-  
   display: flex;
   flex-direction: column;
 }

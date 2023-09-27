@@ -15,7 +15,7 @@ export const useTasksStore = defineStore("tasks", {
   actions: {
     async fill() {
       const res = await axios.get("https://freelance-bourse-vue-ts-default-rtdb.firebaseio.com/Tasks.json");
-      this.tasks = res.data
+      this.tasks = Object.values(res.data)
     },
   }
 });

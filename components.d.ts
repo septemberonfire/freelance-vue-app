@@ -14,6 +14,7 @@ declare module 'vue' {
     AFormItem: typeof import('ant-design-vue/es')['FormItem']
     AInput: typeof import('ant-design-vue/es')['Input']
     AppStatus: typeof import('./src/components/AppStatus.vue')['default']
+    ASpin: typeof import('ant-design-vue/es')['Spin']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TheNavbar: typeof import('./src/components/TheNavbar.vue')['default']

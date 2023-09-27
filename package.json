@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
+    "colada-plugin": "^0.1.0",
     "typescript": "^5.0.2",
     "unplugin-vue-components": "^0.25.2",
     "vite": "^4.4.5",

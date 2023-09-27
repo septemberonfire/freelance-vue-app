@@ -1,37 +1,54 @@
 <template>
-  <h1 class="text-white center" v-if="store.tasks.length === 0">
-    Задач пока нет
-  </h1>
-  <h3 class="text-white" v-else>
-    Всего активных задач: {{ store.tasks.length }}
-  </h3>
-  <template v-for="task in store.tasks">
-    <a-card class="card" :title="task.name">
-      <template #extra>
-        <AppStatus :type="task.appStatus"></AppStatus>
-      </template>
-      <div class="card-content">
-        <p>{{ task.caption }}</p>
-        <div class="card-date">
-          <p>Дедлайн: {{ task.date }}</p>
+  <div class="loader" v-if="loading">
+    <a-spin />
+  </div>
+  <div v-else>
+    <div class="velse">
+      <h1>12</h1>
+    </div>
+    <h1 class="text-white center" v-if="store.tasks.length === 0">
+      Задач пока нет
+    </h1>
+    <h3 class="text-white" v-else>
+      Всего активных задач: {{ store.tasks.length }}
+    </h3>
+    <template v-for="task in store.tasks">
+      <a-card class="card" :title="task.name">
+        <template #extra>
+          <AppStatus :type="task.appStatus"></AppStatus>
+        </template>
+        <div class="card-content">
+          <p>{{ task.caption }}</p>
+          <div class="card-date">
+            <p>Дедлайн: {{ task.date }}</p>
+          </div>
         </div>
-      </div>
-      <a-button> Посмотреть </a-button>
-    </a-card>
-  </template>
+        <a-button> Посмотреть </a-button>
+      </a-card>
+    </template>
+  </div>
 </template>
 
 <script lang="ts">
 import AppStatus from "../components/AppStatus.vue";
 import { useTasksStore } from "@/store";
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 
 export default defineComponent({
   setup() {
+    onMounted(async () => {
+      if (store.tasks.length === 0) {
+        loading.value = true
+        await store.fill();
+        loading.value = false;
+      }
+    });
+
+    const loading = ref(false);
     const store = useTasksStore();
-    store.fill();
     return {
       store,
+      loading,
     };
   },
   components: { AppStatus },
@@ -46,5 +63,12 @@ export default defineComponent({
 }
 .card-date {
   padding-bottom: 16px;
+}
+.loader {
+  width: 100px;
+  height: 100px;
+}
+.velse {
+  color: white;
 }
 </style>
