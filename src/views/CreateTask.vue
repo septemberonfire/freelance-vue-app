@@ -45,10 +45,9 @@ interface FormState {
   name: string;
   caption: string;
 }
-const loading = ref(false)
-const currentDate = ref(new Date().toLocaleDateString())
-console.log(currentDate);
 
+
+const loading = ref(false)
 const store = useTasksStore();
 const router = useRouter();
 const picked = ref<Dayjs>();
@@ -56,17 +55,20 @@ const isValid = computed(
   () => formState.name && formState.caption && picked.value
 );
 
+const now = ref(Date.now())
 const formState = reactive<FormState>({
   name: "",
   caption: "",
 });
 
 async function createTaskHandler() {
+  const selectedDate = (new Date(picked.value?.format("YYYY-MM-DDTHH:mm:ss") || '')).valueOf()
   const taskData = {
     name: formState.name,
     date: picked?.value?.format("DD.MM.YYYY"),
     caption: formState.caption,
-    appStatus: "primary",
+    appStatus: selectedDate > now.value ? "warning" : "danger",
+    id: Math.random().toString(16).slice(2),
   };
   loading.value = true
   const response = await axios.post(

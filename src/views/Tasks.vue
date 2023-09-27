@@ -3,9 +3,6 @@
     <a-spin />
   </div>
   <div v-else>
-    <div class="velse">
-      <h1>12</h1>
-    </div>
     <h1 class="text-white center" v-if="store.tasks.length === 0">
       Задач пока нет
     </h1>
@@ -23,7 +20,7 @@
             <p>Дедлайн: {{ task.date }}</p>
           </div>
         </div>
-        <a-button> Посмотреть </a-button>
+        <a-button @click="openTask(task.id)"> Посмотреть </a-button>
       </a-card>
     </template>
   </div>
@@ -33,12 +30,17 @@
 import AppStatus from "../components/AppStatus.vue";
 import { useTasksStore } from "@/store";
 import { defineComponent, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
+    const openTask = (id: string) => {
+      router.push(`/task/${id}`);
+    };
     onMounted(async () => {
       if (store.tasks.length === 0) {
-        loading.value = true
+        loading.value = true;
         await store.fill();
         loading.value = false;
       }
@@ -49,6 +51,7 @@ export default defineComponent({
     return {
       store,
       loading,
+      openTask,
     };
   },
   components: { AppStatus },
@@ -67,8 +70,5 @@ export default defineComponent({
 .loader {
   width: 100px;
   height: 100px;
-}
-.velse {
-  color: white;
 }
 </style>
