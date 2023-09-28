@@ -6,7 +6,8 @@ export interface Task {
   caption: string,
   date: string,
   name: string,
-  id: string
+  id: string,
+  key?: string
 }
 
 export const useTasksStore = defineStore("tasks", {

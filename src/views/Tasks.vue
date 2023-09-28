@@ -9,12 +9,19 @@
     <h3 class="text-white" v-else>
       Всего активных задач: {{ store.tasks.length }}
     </h3>
-    <a-radio-group v-model:value="activeKey" style="margin-bottom: 16px" @change="showKey">
-      <a-radio-button value="all">Все</a-radio-button>
-      <a-radio-button value="primary">Выполненные</a-radio-button>
-      <a-radio-button value="warning">В процессе</a-radio-button>
-      <a-radio-button value="danger">Отменённые</a-radio-button>
-    </a-radio-group>
+    <div class="filters-wrap">
+      <a-radio-group v-model:value="activeKey" style="margin-bottom: 16px">
+        <a-radio-button value="all">Все</a-radio-button>
+        <a-radio-button value="primary">Выполненные</a-radio-button>
+        <a-radio-button value="warning">В процессе</a-radio-button>
+        <a-radio-button value="danger">Отменённые</a-radio-button>
+      </a-radio-group>
+      <a-input-search
+        v-model:value="searchValue"
+        placeholder="input search text"
+        class="filter-search"
+      />
+    </div>
     <template v-if="filterTasks.length" v-for="task in filterTasks">
       <a-card class="card" :title="task.name">
         <template #extra>
@@ -29,7 +36,7 @@
         <a-button @click="openTask(task.id)"> Посмотреть </a-button>
       </a-card>
     </template>
-    <a-card>
+    <a-card v-else>
       <h3>Таких задач нет</h3>
     </a-card>
   </div>
@@ -43,10 +50,6 @@ import { useRouter } from "vue-router";
 
 export default defineComponent({
   setup() {
-    const router = useRouter();
-    const openTask = (id: string) => {
-      router.push(`/task/${id}`);
-    };
     onMounted(async () => {
       if (store.tasks.length === 0) {
         loading.value = true;
@@ -55,34 +58,42 @@ export default defineComponent({
       }
     });
 
-    const filterTasks = computed(() => {
-      switch(activeKey.value) {
-        case 'primary': 
-        return store.tasks.filter((task) => task.appStatus === 'primary')
-        case 'warning': 
-        return store.tasks.filter((task) => task.appStatus === 'warning')
-        case 'danger': 
-        return store.tasks.filter((task) => task.appStatus === 'danger')
-        default:
-        return store.tasks
-      }
-    })
-
-    const activeKey = ref('all')
-
-    const showKey = () => {
-      console.log(activeKey.value);
-      
-    }
-    const loading = ref(false);
+    const router = useRouter();
     const store = useTasksStore();
+
+    const loading = ref(false);
+    const searchValue = ref("");
+    const activeKey = ref("all");
+
+    const openTask = (id: string) => {
+      router.push(`/task/${id}`);
+    };
+
+    const filterTasks = computed(() => {
+      const filterFn = (activeTab?: string) => {
+        return store.tasks.filter(
+          (task) =>
+            (activeTab ? task.appStatus === activeTab : true) &&
+            task.name.toLowerCase().includes(searchValue.value.toLowerCase())
+        );
+      };
+      switch (true) {
+        case activeKey.value === "primary":
+        case activeKey.value === "warning":
+        case activeKey.value === "danger":
+          return filterFn(activeKey.value);
+        default:
+          return filterFn();
+      }
+    });
+
     return {
       store,
       loading,
       openTask,
       activeKey,
-      showKey,
-      filterTasks
+      filterTasks,
+      searchValue,
     };
   },
   components: { AppStatus },
@@ -101,5 +112,12 @@ export default defineComponent({
 .loader {
   width: 100px;
   height: 100px;
+}
+.filters-wrap {
+  display: flex;
+  gap: 16px;
+}
+.filter-search {
+  width: 300px;
 }
 </style>
