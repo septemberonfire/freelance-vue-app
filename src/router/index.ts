@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Task from '../views/Task.vue'
 import Tasks from '../views/Tasks.vue'
 import CreateTask from '../views/CreateTask.vue'
+import NotFound from '../components/NotFound.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -18,6 +19,10 @@ const routes: RouteRecordRaw[] = [
     path: '/new',
     name: 'CreateTask',
     component: CreateTask
+  },
+  {
+    path: '/:notFound',
+    component: NotFound
   }
 ]
 

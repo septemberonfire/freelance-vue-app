@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 
-interface Task {
+export interface Task {
   appStatus: string,
   caption: string,
   date: string,
