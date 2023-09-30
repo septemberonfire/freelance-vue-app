@@ -15,6 +15,7 @@ export default defineConfig({
       ],
     }),
   ],
+  base: 'freelance-vue-app',
   resolve: {
     alias: [
       {
